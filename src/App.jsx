@@ -1,121 +1,113 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import Navbar from './components/Navbar.jsx'
+import Footer from './components/Footer.jsx'
+import SplashScreen from './components/SplashScreen.jsx'
+import HomePage from './pages/HomePage.jsx'
+import AboutPage from './pages/AboutPage.jsx'
+import CollectionPage from './pages/CollectionPage.jsx'
+import NotFoundPage from './pages/NotFoundPage.jsx'
+import CollectionTransition from './components/CollectionTransition.jsx'
 
-function App() {
-  const [count, setCount] = useState(0)
+const pageVariants = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 },
+}
+
+function PageFrame({ children }) {
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function AnimatedRoutes() {
+  const location = useLocation()
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [targetPath, setTargetPath] = useState(location.pathname)
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (location.pathname.startsWith('/collections/') && location.pathname !== targetPath) {
+      setIsTransitioning(true)
+      setTargetPath(location.pathname)
+    } else {
+      setTargetPath(location.pathname)
+    }
+  }, [location.pathname, targetPath])
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      <CollectionTransition 
+        isPresent={isTransitioning} 
+        onTransitionComplete={() => setIsTransitioning(false)} 
+      />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+        <Route
+          path="/"
+          element={
+            <PageFrame>
+              <HomePage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PageFrame>
+              <AboutPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/collections/:slug"
+          element={
+            <PageFrame>
+              <CollectionPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <PageFrame>
+              <NotFoundPage />
+            </PageFrame>
+          }
+        />
+      </Routes>
+      </AnimatePresence>
     </>
+  )
+}
+
+function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowSplash(false), 2300)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  return (
+    <BrowserRouter>
+      <SplashScreen isVisible={showSplash} />
+      <Navbar />
+      <main>
+        <AnimatedRoutes />
+      </main>
+      <Footer />
+    </BrowserRouter>
   )
 }
 
