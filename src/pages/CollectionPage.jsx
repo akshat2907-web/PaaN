@@ -61,7 +61,7 @@ function CollectionPage() {
 
       <section className="section">
         <div className="section-heading">
-          <p className="eyebrow">Sample catalog</p>
+          <p className="eyebrow">In this collection</p>
           <h2>{collection.name} pieces</h2>
         </div>
         <div className="product-grid">
@@ -79,8 +79,8 @@ function CollectionPage() {
       <section className="styling-note">
         <p className="eyebrow">How it feels</p>
         <h2>
-          A collection page built for browsing, storytelling, and future product
-          detail expansion.
+          Pieces chosen for ease, craft, and quiet presence — made to browse
+          slowly and return to often.
         </h2>
       </section>
 

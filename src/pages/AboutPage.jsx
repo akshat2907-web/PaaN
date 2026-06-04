@@ -46,7 +46,7 @@ function AboutPage() {
             The cream base creates warmth and openness, the green gives the
             brand its organic signature, and muted gold adds just enough craft
             detail. The website follows the same balance: breathable layouts,
-            tactile placeholders, and gentle motion.
+            tactile textures, and gentle motion.
           </p>
         </div>
       </section>

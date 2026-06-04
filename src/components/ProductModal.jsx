@@ -30,7 +30,6 @@ function ProductModal({ product, isOpen, onClose }) {
             
             <div className="modal-content">
               <div className={`modal-image textile-${product.tone}`}>
-                {/* This acts as a placeholder image area. Can be replaced with <img src={product.image} /> later */}
                 <span>{product.category}</span>
               </div>
               
@@ -62,7 +61,7 @@ function ProductModal({ product, isOpen, onClose }) {
 
                 <div className="modal-actions">
                   <button className="button primary whatsapp-btn" disabled>
-                    WhatsApp Enquiry Coming Soon
+                    Enquire on WhatsApp
                   </button>
                 </div>
               </div>

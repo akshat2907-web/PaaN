@@ -32,8 +32,8 @@ function HomePage() {
 
       <section className="section product-preview-section">
         <div className="section-heading">
-          <p className="eyebrow">Sample products</p>
-          <h2>A preview of the PaaN catalog experience</h2>
+          <p className="eyebrow">Featured pieces</p>
+          <h2>Curated pieces from across the collections</h2>
         </div>
         <div className="product-grid">
           {featuredProducts.map((product, index) => (
@@ -48,9 +48,8 @@ function HomePage() {
           <h2>Made for office mornings, family visits, pujas, and slow weekends.</h2>
         </div>
         <p>
-          Phase 1 keeps the flow editorial and navigable: visitors can discover
-          the brand, browse the three collection moods, and understand PaaN
-          before ecommerce features are introduced.
+          Discover the brand, browse three collection moods, and find pieces
+          shaped for office mornings, family visits, pujas, and slow weekends.
         </p>
       </section>
 

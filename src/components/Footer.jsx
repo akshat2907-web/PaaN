@@ -29,7 +29,13 @@ function Footer() {
         </div>
       </div>
       <div className="footer-heritage">
-        <button className="heritage-button" onClick={() => alert('Heritage ambience coming soon.')}>♪ Threads of Heritage</button>
+        <button
+          className="heritage-button"
+          type="button"
+          onClick={() => alert('Heritage ambience will be available soon.')}
+        >
+          ♪ Threads of Heritage
+        </button>
       </div>
     </footer>
   );

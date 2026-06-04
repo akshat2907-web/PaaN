@@ -48,7 +48,7 @@ export const products = [
     category: 'Saree',
     fabric: 'Handloom cotton',
     tone: 'leaf',
-    price: 'Sample Rs. 2,890',
+    price: '₹2,890',
     craftNote: 'Handwoven by artisans in Bengal.',
     occasion: 'Everyday routines and quiet afternoons.',
     description: 'A breathable staple with subtle borders.'
@@ -60,7 +60,7 @@ export const products = [
     category: 'Kurta Set',
     fabric: 'Cotton slub',
     tone: 'cream',
-    price: 'Sample Rs. 2,450',
+    price: '₹2,450',
     craftNote: 'Tailored for relaxed fit.',
     occasion: 'Workdays and casual visits.',
     description: 'An effortless silhouette for easy movement.'
@@ -72,7 +72,7 @@ export const products = [
     category: 'Suit',
     fabric: 'Cotton blend',
     tone: 'sage',
-    price: 'Sample Rs. 3,100',
+    price: '₹3,100',
     craftNote: 'Finished with minimal tonal stitching.',
     occasion: 'Morning engagements.',
     description: 'Graceful drape meeting daily comfort.'
@@ -84,7 +84,7 @@ export const products = [
     category: 'Saree',
     fabric: 'Silk cotton',
     tone: 'gold',
-    price: 'Sample Rs. 5,800',
+    price: '₹5,800',
     craftNote: 'Intricate zari motifs.',
     occasion: 'Festivals and pujas.',
     description: 'A richer weave with heritage details.'
@@ -96,7 +96,7 @@ export const products = [
     category: 'Suit',
     fabric: 'Viscose silk',
     tone: 'deep-green',
-    price: 'Sample Rs. 4,950',
+    price: '₹4,950',
     craftNote: 'Subtle hand embroidery on the yoke.',
     occasion: 'Evening dinners and family gatherings.',
     description: 'Polished elegance for special moments.'
@@ -108,7 +108,7 @@ export const products = [
     category: 'Kurta Set',
     fabric: 'Chanderi blend',
     tone: 'pista',
-    price: 'Sample Rs. 4,250',
+    price: '₹4,250',
     craftNote: 'Delicate chanderi borders.',
     occasion: 'Celebratory days.',
     description: 'Lightweight feel with an elevated presence.'
@@ -120,7 +120,7 @@ export const products = [
     category: 'Saree',
     fabric: 'Linen silk',
     tone: 'madder',
-    price: 'Sample Rs. 7,200',
+    price: '₹7,200',
     craftNote: 'Limited run archival motif revival.',
     occasion: 'Collector’s wardrobe pieces.',
     description: 'A distinctive statement rooted in rare craft.'
@@ -132,7 +132,7 @@ export const products = [
     category: 'Kurta Set',
     fabric: 'Fine cotton silk',
     tone: 'leaf',
-    price: 'Sample Rs. 6,100',
+    price: '₹6,100',
     craftNote: 'Hand-finished edging.',
     occasion: 'Intimate celebrations.',
     description: 'A calm, considered aesthetic for repeat wear.'
@@ -144,7 +144,7 @@ export const products = [
     category: 'Suit',
     fabric: 'Modal silk',
     tone: 'ink',
-    price: 'Sample Rs. 6,850',
+    price: '₹6,850',
     craftNote: 'Precision paneling for movement.',
     occasion: 'Signature events.',
     description: 'Sophisticated lines with deep, enduring color.'
