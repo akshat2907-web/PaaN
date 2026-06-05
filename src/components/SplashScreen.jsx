@@ -10,6 +10,58 @@ function SplashScreen({ isVisible }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.48, ease: [0.37, 0, 0.63, 1] }}
         >
+          <svg
+            className="splash-vine splash-vine-top"
+            viewBox="0 0 260 260"
+            aria-hidden="true"
+          >
+            <path
+              className="splash-vine-stem"
+              d="M21 177C61 165 71 121 102 99C129 80 161 83 184 59C198 44 204 27 206 12"
+            />
+            <path
+              className="splash-vine-stem splash-vine-fine"
+              d="M72 143C91 135 106 138 121 151"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M87 116C62 107 45 119 35 142C59 149 79 139 87 116Z"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M140 84C128 59 139 39 162 27C174 51 165 73 140 84Z"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M157 72C180 68 197 79 207 101C184 107 166 96 157 72Z"
+            />
+          </svg>
+          <svg
+            className="splash-vine splash-vine-bottom"
+            viewBox="0 0 260 260"
+            aria-hidden="true"
+          >
+            <path
+              className="splash-vine-stem"
+              d="M21 177C61 165 71 121 102 99C129 80 161 83 184 59C198 44 204 27 206 12"
+            />
+            <path
+              className="splash-vine-stem splash-vine-fine"
+              d="M72 143C91 135 106 138 121 151"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M87 116C62 107 45 119 35 142C59 149 79 139 87 116Z"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M140 84C128 59 139 39 162 27C174 51 165 73 140 84Z"
+            />
+            <path
+              className="splash-vine-leaf"
+              d="M157 72C180 68 197 79 207 101C184 107 166 96 157 72Z"
+            />
+          </svg>
           <motion.div
             className="splash-intro-copy"
             initial="initial"
@@ -45,7 +97,7 @@ function SplashScreen({ isVisible }) {
                 ease: [0.37, 0, 0.63, 1],
               }}
             >
-              Where Every Thread Tells a Story.
+              Stories of Luxury, Shaped on the Loom.
             </motion.p>
           </motion.div>
         </motion.div>

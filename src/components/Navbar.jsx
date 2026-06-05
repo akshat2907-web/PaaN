@@ -28,6 +28,9 @@ function Navbar() {
       <nav className="navbar" aria-label="Main navigation">
         <Link className="brand-lockup" to="/" onClick={closeMenu}>
           <BrandLogo variant="nav" />
+          <span className="brand-signature">
+            Stories of Luxury, Shaped on the Loom.
+          </span>
         </Link>
 
         <div className="desktop-nav">

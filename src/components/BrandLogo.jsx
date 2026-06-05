@@ -3,7 +3,7 @@ function BrandLogo({ className = '', variant = 'default' }) {
     <span className={`brand-logo brand-logo-${variant} ${className}`.trim()}>
       <img
         src="/paan-logo-official.png"
-        alt="PaaN - Threads of Heritage"
+        alt="PaaN"
         onError={(event) => {
           event.currentTarget.hidden = true
         }}
