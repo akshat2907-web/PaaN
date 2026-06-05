@@ -292,73 +292,21 @@ p {
   pointer-events: none;
 }
 
-.splash-vine {
-  position: absolute;
-  width: min(38vw, 320px);
-  height: auto;
-  color: #214b2d;
-  opacity: 0.42;
-  overflow: visible;
-}
-
-.splash-vine-top {
-  top: 16px;
-  left: 18px;
-}
-
-.splash-vine-bottom {
-  right: 18px;
-  bottom: 16px;
-  transform: rotate(180deg);
-}
-
-.splash-vine-stem,
-.splash-vine-leaf,
-.splash-vine-vein {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.splash-vine-stem {
-  stroke-width: 2.4;
-}
-
-.splash-vine-stem-main {
-  filter: drop-shadow(0 7px 10px rgba(33, 75, 45, 0.05));
-}
-
-.splash-vine-fine {
-  stroke-width: 1.15;
-  opacity: 0.68;
-}
-
-.splash-vine-leaf {
-  fill: rgba(33, 75, 45, 0.1);
-  stroke-width: 1.55;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.splash-vine-leaf-small {
-  fill: rgba(33, 75, 45, 0.075);
-}
-
-.splash-vine-vein {
-  stroke-width: 0.85;
-  opacity: 0.42;
-}
-
 .splash-intro-copy {
   position: relative;
   display: grid;
-  gap: 18px;
+  gap: 20px;
   justify-items: center;
   width: min(620px, calc(100% - 48px));
   padding: 46px 34px 42px;
   text-align: center;
+}
+
+.splash-wordmark {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  padding-right: clamp(30px, 5vw, 58px);
 }
 
 .splash-title {
@@ -368,6 +316,48 @@ p {
   font-weight: 500;
   line-height: 0.86;
   text-shadow: 0 10px 28px rgba(15, 61, 34, 0.08);
+}
+
+.splash-logo-vine {
+  position: absolute;
+  width: clamp(86px, 12vw, 142px);
+  height: auto;
+  left: calc(100% - clamp(58px, 8vw, 92px));
+  top: clamp(-28px, -2.2vw, -12px);
+  color: #214b2d;
+  overflow: visible;
+}
+
+.splash-logo-vine-stem,
+.splash-logo-leaf,
+.splash-logo-vein {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.splash-logo-vine-stem {
+  stroke-width: 1.45;
+  filter: drop-shadow(0 6px 10px rgba(33, 75, 45, 0.05));
+}
+
+.splash-logo-vine-fine {
+  stroke-width: 0.82;
+  opacity: 0.64;
+}
+
+.splash-logo-leaf {
+  fill: rgba(33, 75, 45, 0.1);
+  stroke-width: 1.12;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.splash-logo-vein {
+  stroke-width: 0.62;
+  opacity: 0.45;
 }
 
 .splash-tagline {
@@ -1217,19 +1207,10 @@ p {
     min-height: 60px;
   }
 
-  .splash-vine {
-    width: 210px;
-    opacity: 0.34;
-  }
-
-  .splash-vine-top {
+  .splash-logo-vine {
+    width: 82px;
+    left: calc(100% - 54px);
     top: -18px;
-    left: -28px;
-  }
-
-  .splash-vine-bottom {
-    right: -28px;
-    bottom: -18px;
   }
 
   .hero-tagline {

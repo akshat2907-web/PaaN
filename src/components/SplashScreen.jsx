@@ -1,100 +1,92 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const vineStem = {
-  initial: { opacity: 0.32, pathLength: 0 },
-  animate: {
-    opacity: 0.86,
-    pathLength: 1,
-    transition: { duration: 0.92, delay: 0.08, ease: [0.37, 0, 0.63, 1] },
-  },
-}
+const lineEase = [0.37, 0, 0.63, 1]
+const softEase = [0.22, 1, 0.36, 1]
 
-const vineDetail = {
+const logoVineStem = {
   initial: { opacity: 0, pathLength: 0 },
   animate: {
-    opacity: 0.62,
-    pathLength: 1,
-    transition: { duration: 0.72, delay: 0.36, ease: [0.37, 0, 0.63, 1] },
+    opacity: [0, 0.9, 0.9, 0],
+    pathLength: [0, 1, 1, 1],
+    transition: {
+      duration: 1.38,
+      times: [0, 0.48, 0.82, 1],
+      delay: 0.52,
+      ease: lineEase,
+    },
   },
 }
 
-const vineLeaf = {
-  initial: { opacity: 0, rotate: -4, scale: 0.78 },
-  animate: (index) => ({
-    opacity: 0.92,
-    rotate: 0,
-    scale: 1,
+const logoVineDetail = {
+  initial: { opacity: 0, pathLength: 0 },
+  animate: {
+    opacity: [0, 0.54, 0.54, 0],
+    pathLength: [0, 1, 1, 1],
     transition: {
-      duration: 0.48,
-      delay: 0.52 + index * 0.13,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 1.02,
+      times: [0, 0.46, 0.82, 1],
+      delay: 0.72,
+      ease: lineEase,
+    },
+  },
+}
+
+const logoLeaf = {
+  initial: { opacity: 0, rotate: -5, scale: 0.78 },
+  animate: (delay) => ({
+    opacity: [0, 0.92, 0.92, 0],
+    rotate: 0,
+    scale: [0.78, 1, 1, 0.96],
+    transition: {
+      duration: 1,
+      times: [0, 0.34, 0.82, 1],
+      delay,
+      ease: softEase,
     },
   }),
 }
 
-function BotanicalVine({ className }) {
+function WordmarkVine() {
   return (
     <motion.svg
-      className={`splash-vine ${className}`}
-      viewBox="0 0 320 320"
+      className="splash-logo-vine"
+      viewBox="0 0 170 132"
       aria-hidden="true"
       initial="initial"
       animate="animate"
     >
       <motion.path
-        className="splash-vine-stem splash-vine-stem-main"
-        d="M26 246C70 232 77 184 112 151C143 122 180 118 213 85C238 60 249 32 252 12"
-        variants={vineStem}
+        className="splash-logo-vine-stem"
+        d="M10 88C29 82 38 66 49 48C58 34 69 25 82 24C99 22 108 34 104 47C101 58 88 62 78 57"
+        variants={logoVineStem}
       />
       <motion.path
-        className="splash-vine-stem splash-vine-stem-main"
-        d="M58 210C92 205 111 219 132 244"
-        variants={vineDetail}
+        className="splash-logo-vine-stem splash-logo-vine-fine"
+        d="M48 49C38 39 35 26 41 13"
+        variants={logoVineDetail}
       />
       <motion.path
-        className="splash-vine-stem splash-vine-fine"
-        d="M111 153C126 133 126 111 115 91"
-        variants={vineDetail}
+        className="splash-logo-vine-stem splash-logo-vine-fine"
+        d="M82 24C96 12 113 11 130 22"
+        variants={logoVineDetail}
       />
       <motion.path
-        className="splash-vine-stem splash-vine-fine"
-        d="M178 115C203 113 222 126 237 151"
-        variants={vineDetail}
+        className="splash-logo-leaf"
+        d="M43 18C25 10 10 17 3 35C21 42 37 35 43 18Z"
+        custom={0.86}
+        variants={logoLeaf}
       />
       <motion.path
-        className="splash-vine-stem splash-vine-fine"
-        d="M216 82C204 63 205 43 219 22"
-        variants={vineDetail}
+        className="splash-logo-leaf"
+        d="M126 26C139 10 158 9 168 24C154 40 137 40 126 26Z"
+        custom={1.02}
+        variants={logoLeaf}
       />
       <motion.path
-        className="splash-vine-leaf"
-        d="M92 159C58 144 36 158 23 190C58 199 84 187 92 159Z"
-        custom={0}
-        variants={vineLeaf}
-      />
-      <motion.path
-        className="splash-vine-leaf splash-vine-leaf-small"
-        d="M124 132C105 105 113 78 142 60C159 91 151 118 124 132Z"
-        custom={1}
-        variants={vineLeaf}
-      />
-      <motion.path
-        className="splash-vine-leaf"
-        d="M180 108C203 84 233 87 257 109C233 132 203 132 180 108Z"
-        custom={2}
-        variants={vineLeaf}
-      />
-      <motion.path
-        className="splash-vine-leaf splash-vine-leaf-small"
-        d="M218 76C204 48 214 25 242 10C256 39 247 64 218 76Z"
-        custom={3}
-        variants={vineLeaf}
-      />
-      <motion.path
-        className="splash-vine-vein"
-        d="M36 185C53 177 70 170 91 159M132 123C134 104 137 84 142 60M194 106C213 108 235 109 257 109M226 68C232 49 237 29 242 10"
-        variants={vineDetail}
+        className="splash-logo-vein"
+        d="M11 33C20 28 31 23 43 18M133 26C144 25 156 25 168 24"
+        variants={logoVineDetail}
       />
     </motion.svg>
   )
@@ -120,43 +112,34 @@ function SplashScreen({ isVisible }) {
           className="splash-screen"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.48, ease: [0.37, 0, 0.63, 1] }}
+          transition={{ duration: 0.48, ease: lineEase }}
         >
-          <BotanicalVine className="splash-vine-top" />
-          <BotanicalVine className="splash-vine-bottom" />
-          <motion.div
-            className="splash-intro-copy"
-            initial="initial"
-            animate="animate"
-            transition={{
-              staggerChildren: 0.32,
-              delayChildren: 0.88,
-            }}
-          >
-            <motion.p
-              className="splash-title"
-              variants={{
-                initial: { opacity: 0, y: 10 },
-                animate: { opacity: [0, 1, 1, 0], y: [10, 0, 0, -4] },
-              }}
-              transition={{
-                duration: 1.42,
-                times: [0, 0.32, 0.78, 1],
-                ease: [0.37, 0, 0.63, 1],
-              }}
-            >
-              PaaN
-            </motion.p>
+          <motion.div className="splash-intro-copy">
+            <div className="splash-wordmark">
+              <motion.p
+                className="splash-title"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: [0, 1, 1, 0], y: [10, 0, 0, -4] }}
+                transition={{
+                  duration: 1.72,
+                  times: [0, 0.28, 0.78, 1],
+                  delay: 0.18,
+                  ease: lineEase,
+                }}
+              >
+                PaaN
+              </motion.p>
+              <WordmarkVine />
+            </div>
             <motion.p
               className="splash-tagline"
-              variants={{
-                initial: { opacity: 0, y: 8 },
-                animate: { opacity: [0, 1, 1, 0], y: [8, 0, 0, -3] },
-              }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: [0, 1, 1, 0], y: [8, 0, 0, -3] }}
               transition={{
                 duration: 0.96,
                 times: [0, 0.34, 0.72, 1],
-                ease: [0.37, 0, 0.63, 1],
+                delay: 1.22,
+                ease: lineEase,
               }}
             >
               Stories of Luxury, Shaped on the Loom.
