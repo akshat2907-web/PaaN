@@ -1,74 +1,136 @@
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
+const vineStem = {
+  initial: { opacity: 0.32, pathLength: 0 },
+  animate: {
+    opacity: 0.86,
+    pathLength: 1,
+    transition: { duration: 0.92, delay: 0.08, ease: [0.37, 0, 0.63, 1] },
+  },
+}
+
+const vineDetail = {
+  initial: { opacity: 0, pathLength: 0 },
+  animate: {
+    opacity: 0.62,
+    pathLength: 1,
+    transition: { duration: 0.72, delay: 0.36, ease: [0.37, 0, 0.63, 1] },
+  },
+}
+
+const vineLeaf = {
+  initial: { opacity: 0, rotate: -4, scale: 0.78 },
+  animate: (index) => ({
+    opacity: 0.92,
+    rotate: 0,
+    scale: 1,
+    transition: {
+      duration: 0.48,
+      delay: 0.52 + index * 0.13,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
+}
+
+function BotanicalVine({ className }) {
+  return (
+    <motion.svg
+      className={`splash-vine ${className}`}
+      viewBox="0 0 320 320"
+      aria-hidden="true"
+      initial="initial"
+      animate="animate"
+    >
+      <motion.path
+        className="splash-vine-stem splash-vine-stem-main"
+        d="M26 246C70 232 77 184 112 151C143 122 180 118 213 85C238 60 249 32 252 12"
+        variants={vineStem}
+      />
+      <motion.path
+        className="splash-vine-stem splash-vine-stem-main"
+        d="M58 210C92 205 111 219 132 244"
+        variants={vineDetail}
+      />
+      <motion.path
+        className="splash-vine-stem splash-vine-fine"
+        d="M111 153C126 133 126 111 115 91"
+        variants={vineDetail}
+      />
+      <motion.path
+        className="splash-vine-stem splash-vine-fine"
+        d="M178 115C203 113 222 126 237 151"
+        variants={vineDetail}
+      />
+      <motion.path
+        className="splash-vine-stem splash-vine-fine"
+        d="M216 82C204 63 205 43 219 22"
+        variants={vineDetail}
+      />
+      <motion.path
+        className="splash-vine-leaf"
+        d="M92 159C58 144 36 158 23 190C58 199 84 187 92 159Z"
+        custom={0}
+        variants={vineLeaf}
+      />
+      <motion.path
+        className="splash-vine-leaf splash-vine-leaf-small"
+        d="M124 132C105 105 113 78 142 60C159 91 151 118 124 132Z"
+        custom={1}
+        variants={vineLeaf}
+      />
+      <motion.path
+        className="splash-vine-leaf"
+        d="M180 108C203 84 233 87 257 109C233 132 203 132 180 108Z"
+        custom={2}
+        variants={vineLeaf}
+      />
+      <motion.path
+        className="splash-vine-leaf splash-vine-leaf-small"
+        d="M218 76C204 48 214 25 242 10C256 39 247 64 218 76Z"
+        custom={3}
+        variants={vineLeaf}
+      />
+      <motion.path
+        className="splash-vine-vein"
+        d="M36 185C53 177 70 170 91 159M132 123C134 104 137 84 142 60M194 106C213 108 235 109 257 109M226 68C232 49 237 29 242 10"
+        variants={vineDetail}
+      />
+    </motion.svg>
+  )
+}
+
 function SplashScreen({ isVisible }) {
+  const [shouldRender, setShouldRender] = useState(isVisible)
+
+  useEffect(() => {
+    if (isVisible) {
+      setShouldRender(true)
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => setShouldRender(false), 600)
+    return () => window.clearTimeout(timer)
+  }, [isVisible])
+
   return (
     <AnimatePresence>
-      {isVisible ? (
+      {shouldRender ? (
         <motion.div
           className="splash-screen"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.48, ease: [0.37, 0, 0.63, 1] }}
         >
-          <svg
-            className="splash-vine splash-vine-top"
-            viewBox="0 0 260 260"
-            aria-hidden="true"
-          >
-            <path
-              className="splash-vine-stem"
-              d="M21 177C61 165 71 121 102 99C129 80 161 83 184 59C198 44 204 27 206 12"
-            />
-            <path
-              className="splash-vine-stem splash-vine-fine"
-              d="M72 143C91 135 106 138 121 151"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M87 116C62 107 45 119 35 142C59 149 79 139 87 116Z"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M140 84C128 59 139 39 162 27C174 51 165 73 140 84Z"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M157 72C180 68 197 79 207 101C184 107 166 96 157 72Z"
-            />
-          </svg>
-          <svg
-            className="splash-vine splash-vine-bottom"
-            viewBox="0 0 260 260"
-            aria-hidden="true"
-          >
-            <path
-              className="splash-vine-stem"
-              d="M21 177C61 165 71 121 102 99C129 80 161 83 184 59C198 44 204 27 206 12"
-            />
-            <path
-              className="splash-vine-stem splash-vine-fine"
-              d="M72 143C91 135 106 138 121 151"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M87 116C62 107 45 119 35 142C59 149 79 139 87 116Z"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M140 84C128 59 139 39 162 27C174 51 165 73 140 84Z"
-            />
-            <path
-              className="splash-vine-leaf"
-              d="M157 72C180 68 197 79 207 101C184 107 166 96 157 72Z"
-            />
-          </svg>
+          <BotanicalVine className="splash-vine-top" />
+          <BotanicalVine className="splash-vine-bottom" />
           <motion.div
             className="splash-intro-copy"
             initial="initial"
             animate="animate"
             transition={{
-              staggerChildren: 0.36,
-              delayChildren: 0.12,
+              staggerChildren: 0.32,
+              delayChildren: 0.88,
             }}
           >
             <motion.p
@@ -78,7 +140,7 @@ function SplashScreen({ isVisible }) {
                 animate: { opacity: [0, 1, 1, 0], y: [10, 0, 0, -4] },
               }}
               transition={{
-                duration: 1.32,
+                duration: 1.42,
                 times: [0, 0.32, 0.78, 1],
                 ease: [0.37, 0, 0.63, 1],
               }}

@@ -294,43 +294,61 @@ p {
 
 .splash-vine {
   position: absolute;
-  width: min(34vw, 260px);
+  width: min(38vw, 320px);
   height: auto;
-  color: var(--green-900);
-  opacity: 0.2;
+  color: #214b2d;
+  opacity: 0.42;
+  overflow: visible;
 }
 
 .splash-vine-top {
-  top: 22px;
-  left: 22px;
+  top: 16px;
+  left: 18px;
 }
 
 .splash-vine-bottom {
-  right: 22px;
-  bottom: 22px;
+  right: 18px;
+  bottom: 16px;
   transform: rotate(180deg);
 }
 
 .splash-vine-stem,
-.splash-vine-leaf {
+.splash-vine-leaf,
+.splash-vine-vein {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .splash-vine-stem {
-  stroke-width: 3;
+  stroke-width: 2.4;
+}
+
+.splash-vine-stem-main {
+  filter: drop-shadow(0 7px 10px rgba(33, 75, 45, 0.05));
 }
 
 .splash-vine-fine {
-  stroke-width: 1.5;
-  opacity: 0.72;
+  stroke-width: 1.15;
+  opacity: 0.68;
 }
 
 .splash-vine-leaf {
-  fill: rgba(22, 84, 42, 0.08);
-  stroke-width: 2;
+  fill: rgba(33, 75, 45, 0.1);
+  stroke-width: 1.55;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.splash-vine-leaf-small {
+  fill: rgba(33, 75, 45, 0.075);
+}
+
+.splash-vine-vein {
+  stroke-width: 0.85;
+  opacity: 0.42;
 }
 
 .splash-intro-copy {
@@ -1197,6 +1215,21 @@ p {
 
   .site-header {
     min-height: 60px;
+  }
+
+  .splash-vine {
+    width: 210px;
+    opacity: 0.34;
+  }
+
+  .splash-vine-top {
+    top: -18px;
+    left: -28px;
+  }
+
+  .splash-vine-bottom {
+    right: -28px;
+    bottom: -18px;
   }
 
   .hero-tagline {
