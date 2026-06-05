@@ -19,7 +19,12 @@ function Navbar() {
   const closeMenu = () => setIsOpen(false)
 
   return (
-    <header className="site-header">
+    <motion.header
+      className="site-header"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.62, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
       <nav className="navbar" aria-label="Main navigation">
         <Link className="brand-lockup" to="/" onClick={closeMenu}>
           <BrandLogo variant="nav" />
@@ -75,7 +80,7 @@ function Navbar() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-    </header>
+    </motion.header>
   )
 }
 

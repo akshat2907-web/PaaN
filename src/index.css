@@ -276,21 +276,31 @@ p {
   inset: 0;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at center, rgba(255, 253, 247, 0.95), transparent 56%),
-    var(--cream);
+  background: var(--cream);
+  pointer-events: none;
 }
 
-.splash-emblem {
-  position: relative;
+.splash-intro-copy {
   display: grid;
-  width: 330px;
-  height: 330px;
-  place-items: center;
-  border: 1px solid rgba(181, 148, 74, 0.35);
-  border-radius: 50%;
-  background: rgba(255, 253, 247, 0.86);
-  box-shadow: var(--shadow);
+  gap: 16px;
+  justify-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.splash-title {
+  color: var(--green-900);
+  font-family: var(--serif);
+  font-size: clamp(64px, 11vw, 112px);
+  font-weight: 500;
+  line-height: 0.92;
+}
+
+.splash-tagline {
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.2;
 }
 
 .hero-section {
