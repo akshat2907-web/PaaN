@@ -163,3 +163,7 @@ export function getCollectionBySlug(slug) {
 export function getProductsByCollection(slug) {
   return products.filter((product) => product.collection === slug)
 }
+
+export function getProductById(productId) {
+  return products.find((product) => product.id === productId)
+}

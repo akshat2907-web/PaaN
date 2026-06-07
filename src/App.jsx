@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Navbar from './components/Navbar.jsx'
@@ -7,6 +7,7 @@ import SplashScreen from './components/SplashScreen.jsx'
 import HomePage from './pages/HomePage.jsx'
 import AboutPage from './pages/AboutPage.jsx'
 import CollectionPage from './pages/CollectionPage.jsx'
+import ProductPage from './pages/ProductPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import CollectionTransition from './components/CollectionTransition.jsx'
 
@@ -30,28 +31,49 @@ function PageFrame({ children }) {
   )
 }
 
+function getCollectionSlug(pathname) {
+  return pathname.startsWith('/collections/') ? pathname.split('/')[2] : ''
+}
+
 function AnimatedRoutes() {
   const location = useLocation()
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const [targetPath, setTargetPath] = useState(location.pathname)
+  const [transitionCollection, setTransitionCollection] = useState(getCollectionSlug(location.pathname))
+  const previousPathRef = useRef(location.pathname)
+  const seenCollectionTransitionsRef = useRef(new Set())
 
   useEffect(() => {
+    const currentPath = location.pathname
+    const collectionSlug = getCollectionSlug(currentPath)
+
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    if (location.pathname.startsWith('/collections/') && location.pathname !== targetPath) {
-      setIsTransitioning(true)
-      setTargetPath(location.pathname)
-    } else {
-      setTargetPath(location.pathname)
+
+    if (currentPath === '/' || !collectionSlug) {
+      setIsTransitioning(false)
+      previousPathRef.current = currentPath
+      return
     }
-  }, [location.pathname, targetPath])
+
+    if (currentPath !== previousPathRef.current) {
+      const hasSeenTransition = seenCollectionTransitionsRef.current.has(collectionSlug)
+
+      setTransitionCollection(collectionSlug)
+      setIsTransitioning(!hasSeenTransition)
+      seenCollectionTransitionsRef.current.add(collectionSlug)
+      previousPathRef.current = currentPath
+    } else {
+      setIsTransitioning(false)
+    }
+  }, [location.pathname])
 
   return (
     <>
       <CollectionTransition 
         isPresent={isTransitioning} 
+        collection={transitionCollection}
         onTransitionComplete={() => setIsTransitioning(false)} 
       />
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <Routes location={location} key={location.pathname}>
         <Route
           path="/"
@@ -74,6 +96,14 @@ function AnimatedRoutes() {
           element={
             <PageFrame>
               <CollectionPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/products/:productId"
+          element={
+            <PageFrame>
+              <ProductPage />
             </PageFrame>
           }
         />

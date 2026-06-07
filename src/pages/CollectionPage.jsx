@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard.jsx'
@@ -6,12 +5,10 @@ import {
   getCollectionBySlug,
   getProductsByCollection,
 } from '../data/catalog.js'
-import ProductModal from '../components/ProductModal.jsx'
 
 function CollectionPage() {
   const { slug } = useParams()
   const collection = getCollectionBySlug(slug)
-  const [selectedProduct, setSelectedProduct] = useState(null)
 
   if (!collection) {
     return (
@@ -70,7 +67,6 @@ function CollectionPage() {
               key={product.id} 
               product={product} 
               index={index} 
-              onClick={() => setSelectedProduct(product)}
             />
           ))}
         </div>
@@ -84,11 +80,6 @@ function CollectionPage() {
         </h2>
       </section>
 
-      <ProductModal 
-        product={selectedProduct} 
-        isOpen={!!selectedProduct} 
-        onClose={() => setSelectedProduct(null)} 
-      />
     </>
   )
 }
