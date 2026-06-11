@@ -3,6 +3,8 @@ import { Link, NavLink } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { collections } from '../data/catalog.js'
 import BrandLogo from './BrandLogo.jsx'
+import CartDropdown from './CartDropdown.jsx'
+import AccountDropdown from './AccountDropdown.jsx'
 
 const navItems = [
   { label: 'Home', to: '/' },
@@ -45,6 +47,8 @@ function Navbar() {
               {item.label}
             </NavLink>
           ))}
+          <AccountDropdown />
+          <CartDropdown />
         </div>
 
         <button
@@ -80,6 +84,10 @@ function Navbar() {
                 {item.label}
               </NavLink>
             ))}
+            <div className="mobile-cart-row">
+              <AccountDropdown onNavigate={closeMenu} />
+              <CartDropdown onNavigate={closeMenu} />
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>

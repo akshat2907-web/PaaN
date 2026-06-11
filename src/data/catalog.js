@@ -40,7 +40,14 @@ export const collections = [
   },
 ]
 
-export const products = [
+const productDefaults = {
+  inventory_count: 0,
+  inventoryCount: 0,
+  featured: false,
+  isInStock: false,
+}
+
+const catalogProducts = [
   {
     id: 'classic-01',
     collection: 'classic',
@@ -150,6 +157,13 @@ export const products = [
     description: 'Sophisticated lines with deep, enduring color.'
   },
 ]
+
+export const products = catalogProducts.map((product) => ({
+  ...productDefaults,
+  ...product,
+  inventoryCount: product.inventory_count ?? product.inventoryCount ?? productDefaults.inventoryCount,
+  isInStock: (product.inventory_count ?? product.inventoryCount ?? 0) > 0,
+}))
 
 export const founderNotes = [
   'PaaN began with the idea that heritage clothing can be part of ordinary, beautiful days.',

@@ -10,8 +10,11 @@ function ProductCard({ product, index = 0 }) {
       viewport={{ once: true, amount: 0.25 }}
       transition={{ delay: index * 0.08, duration: 0.45 }}
     >
-      <Link to={`/products/${product.id}`} aria-label={`View ${product.name}`}>
+      <Link to={`/products/${product.slug || product.id}`} aria-label={`View ${product.name}`}>
         <div className={`product-image textile-${product.tone}`}>
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt={product.name} loading="lazy" />
+          ) : null}
           <span>{product.category}</span>
         </div>
         <div className="product-content">

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard.jsx'
@@ -5,10 +6,39 @@ import {
   getCollectionBySlug,
   getProductsByCollection,
 } from '../data/catalog.js'
+import { fetchPublishedProductsByCollection } from '../lib/productsApi.js'
 
 function CollectionPage() {
   const { slug } = useParams()
   const collection = getCollectionBySlug(slug)
+  const [supabaseProducts, setSupabaseProducts] = useState([])
+  const [shouldUseFallback, setShouldUseFallback] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadProducts() {
+      if (!collection) return
+
+      try {
+        const products = await fetchPublishedProductsByCollection(collection.slug)
+        if (!isMounted) return
+
+        setSupabaseProducts(products)
+        setShouldUseFallback(products.length === 0)
+      } catch {
+        if (!isMounted) return
+        setSupabaseProducts([])
+        setShouldUseFallback(true)
+      }
+    }
+
+    loadProducts()
+
+    return () => {
+      isMounted = false
+    }
+  }, [collection])
 
   if (!collection) {
     return (
@@ -22,7 +52,9 @@ function CollectionPage() {
     )
   }
 
-  const collectionProducts = getProductsByCollection(collection.slug)
+  const collectionProducts = shouldUseFallback
+    ? getProductsByCollection(collection.slug)
+    : supabaseProducts
 
   return (
     <>

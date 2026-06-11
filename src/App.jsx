@@ -6,10 +6,15 @@ import Footer from './components/Footer.jsx'
 import SplashScreen from './components/SplashScreen.jsx'
 import HomePage from './pages/HomePage.jsx'
 import AboutPage from './pages/AboutPage.jsx'
+import AdminPage from './pages/AdminPage.jsx'
 import CollectionPage from './pages/CollectionPage.jsx'
 import ProductPage from './pages/ProductPage.jsx'
+import CartPage from './pages/CartPage.jsx'
+import AccountPage from './pages/AccountPage.jsx'
 import NotFoundPage from './pages/NotFoundPage.jsx'
 import CollectionTransition from './components/CollectionTransition.jsx'
+import { CartProvider } from './context/CartContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 
 const pageVariants = {
   initial: { opacity: 0, y: 18 },
@@ -92,6 +97,14 @@ function AnimatedRoutes() {
           }
         />
         <Route
+          path="/admin"
+          element={
+            <PageFrame>
+              <AdminPage />
+            </PageFrame>
+          }
+        />
+        <Route
           path="/collections/:slug"
           element={
             <PageFrame>
@@ -104,6 +117,30 @@ function AnimatedRoutes() {
           element={
             <PageFrame>
               <ProductPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/product/:productId"
+          element={
+            <PageFrame>
+              <ProductPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <PageFrame>
+              <CartPage />
+            </PageFrame>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <PageFrame>
+              <AccountPage />
             </PageFrame>
           }
         />
@@ -131,12 +168,16 @@ function App() {
 
   return (
     <BrowserRouter>
-      <SplashScreen isVisible={showSplash} />
-      <Navbar />
-      <main>
-        <AnimatedRoutes />
-      </main>
-      <Footer />
+      <AuthProvider>
+        <CartProvider>
+          <SplashScreen isVisible={showSplash} />
+          <Navbar />
+          <main>
+            <AnimatedRoutes />
+          </main>
+          <Footer />
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
