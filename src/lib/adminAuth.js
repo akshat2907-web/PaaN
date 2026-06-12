@@ -1,5 +1,9 @@
 import { supabase } from './supabase.js'
 
+function getAdminMagicLinkRedirectTo() {
+  return `${window.location.origin}/admin`
+}
+
 export async function getSession() {
   if (!supabase) return null
 
@@ -43,7 +47,7 @@ export async function signInAdmin({ email, password }) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.origin + '/admin',
+      emailRedirectTo: getAdminMagicLinkRedirectTo(),
     },
   })
 

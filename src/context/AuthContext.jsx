@@ -3,6 +3,10 @@ import { supabase } from '../lib/supabase.js'
 
 const AuthContext = createContext(null)
 
+function getCustomerMagicLinkRedirectTo() {
+  return `${window.location.origin}/account`
+}
+
 async function upsertCustomerProfile(user) {
   if (!supabase || !user?.id || !user?.email) return null
 
@@ -92,7 +96,7 @@ export function AuthProvider({ children }) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: getCustomerMagicLinkRedirectTo(),
       },
     })
 
