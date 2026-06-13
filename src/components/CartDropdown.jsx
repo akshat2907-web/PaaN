@@ -1,25 +1,48 @@
-import { useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { formatCartPrice, useCart } from '../context/CartContext.jsx'
 
-function CartDropdown({ onNavigate }) {
-  const [isOpen, setIsOpen] = useState(false)
+function CartDropdown({ isOpen = false, onClose, onNavigate, onToggle }) {
+  const menuRef = useRef(null)
   const { items, itemCount, formattedSubtotal, updateQuantity, removeItem } = useCart()
 
   function closeDropdown() {
-    setIsOpen(false)
+    onClose?.()
     onNavigate?.()
   }
 
+  useEffect(() => {
+    if (!isOpen) return undefined
+
+    function handleDocumentMouseDown(event) {
+      if (menuRef.current?.contains(event.target)) return
+      onClose?.()
+    }
+
+    function handleDocumentKeyDown(event) {
+      if (event.key === 'Escape') {
+        onClose?.()
+      }
+    }
+
+    document.addEventListener('mousedown', handleDocumentMouseDown)
+    document.addEventListener('keydown', handleDocumentKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentMouseDown)
+      document.removeEventListener('keydown', handleDocumentKeyDown)
+    }
+  }, [isOpen, onClose])
+
   return (
-    <div className="cart-menu">
+    <div className="cart-menu" ref={menuRef}>
       <button
         className="cart-menu-button"
         type="button"
         aria-label={`Cart with ${itemCount} items`}
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={onToggle}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M7.5 8.5h9l-.55 10.2a2 2 0 0 1-2 1.9h-4.9a2 2 0 0 1-2-1.9L6.5 8.5Z" />

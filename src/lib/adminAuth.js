@@ -1,9 +1,5 @@
 import { supabase } from './supabase.js'
 
-function getAdminMagicLinkRedirectTo() {
-  return `${window.location.origin}/admin`
-}
-
 export async function getSession() {
   if (!supabase) return null
 
@@ -38,19 +34,14 @@ export async function signInAdmin({ email, password }) {
     throw new Error('Supabase is not configured.')
   }
 
-  if (password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-    return
+  if (!password) {
+    throw new Error('Enter your admin password.')
   }
 
-  const { error } = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
-    options: {
-      emailRedirectTo: getAdminMagicLinkRedirectTo(),
-    },
+    password,
   })
-
   if (error) throw error
 }
 

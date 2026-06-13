@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard.jsx'
 import {
   getCollectionBySlug,
@@ -8,11 +8,18 @@ import {
 } from '../data/catalog.js'
 import { fetchPublishedProductsByCollection } from '../lib/productsApi.js'
 
+const collectionFeaturePills = {
+  classic: ['Breathable cottons', 'Everyday drape', 'Handpicked weaves'],
+  premium: ['Refined textures', 'Festive elegance', 'Elevated craft'],
+  exclusive: ['Limited pieces', 'Collector stories', 'Rare weaves'],
+}
+
 function CollectionPage() {
   const { slug } = useParams()
   const collection = getCollectionBySlug(slug)
   const [supabaseProducts, setSupabaseProducts] = useState([])
   const [shouldUseFallback, setShouldUseFallback] = useState(true)
+  const [heroSlide, setHeroSlide] = useState(0)
 
   useEffect(() => {
     let isMounted = true
@@ -39,6 +46,32 @@ function CollectionPage() {
       isMounted = false
     }
   }, [collection])
+
+  const heroImages = supabaseProducts
+    .flatMap((product) => product.media || product.productMedia || product.images || [])
+    .filter((item) => (item.media_type || item.mediaType || 'image') === 'image')
+    .map((item) => ({
+      id: item.id || item.image_url || item.imageUrl,
+      imageUrl: item.image_url || item.imageUrl,
+      altText: item.alt_text || item.altText || collection?.name || 'PaaN collection',
+    }))
+    .filter((item) => item.imageUrl)
+  const hasHeroImages = heroImages.length > 0
+  const featurePills = collectionFeaturePills[collection?.slug] || []
+
+  useEffect(() => {
+    setHeroSlide(0)
+  }, [collection?.slug, heroImages.length])
+
+  useEffect(() => {
+    if (heroImages.length < 2) return undefined
+
+    const timer = setInterval(() => {
+      setHeroSlide((currentSlide) => (currentSlide + 1) % heroImages.length)
+    }, 6200)
+
+    return () => clearInterval(timer)
+  }, [heroImages.length])
 
   if (!collection) {
     return (
@@ -68,15 +101,34 @@ function CollectionPage() {
           <p className="eyebrow">{collection.eyebrow}</p>
           <h1>{collection.name}</h1>
           <p>{collection.longDescription}</p>
-          <span>{collection.heroNote}</span>
+          <div className="collection-hero-pills" aria-label={`${collection.name} features`}>
+            {featurePills.map((pill) => (
+              <span key={pill}>{pill}</span>
+            ))}
+          </div>
         </motion.div>
         <motion.div
-          className="collection-hero-image"
+          className={`collection-hero-image ${hasHeroImages ? 'has-slideshow' : ''}`}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <span>{collection.mood}</span>
+          {hasHeroImages ? (
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={heroImages[heroSlide]?.id || heroImages[heroSlide]?.imageUrl}
+                src={heroImages[heroSlide]?.imageUrl}
+                alt={heroImages[heroSlide]?.altText || collection.name}
+                initial={{ opacity: 0, scale: 1.035 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.01 }}
+                transition={{ duration: 1.8, ease: 'easeInOut' }}
+                loading="lazy"
+              />
+            </AnimatePresence>
+          ) : (
+            <span>{collection.mood}</span>
+          )}
         </motion.div>
       </section>
 

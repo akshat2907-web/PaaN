@@ -14,7 +14,7 @@ function AdminLogin({ onSignedIn }) {
 
     try {
       await signInAdmin({ email, password })
-      setMessage(password ? 'Signed in.' : 'Check your email for the login link.')
+      setMessage('Signed in.')
       onSignedIn?.()
     } catch (error) {
       setMessage(error.message)
@@ -28,8 +28,7 @@ function AdminLogin({ onSignedIn }) {
       <p className="eyebrow">PaaN admin</p>
       <h1>Product management</h1>
       <p>
-        Sign in with your Supabase admin account. Leave the password blank to
-        request a magic link.
+        Sign in with your Supabase admin email and password.
       </p>
 
       <form className="admin-form" onSubmit={handleSubmit}>
@@ -48,7 +47,7 @@ function AdminLogin({ onSignedIn }) {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="Optional for magic link"
+            required
           />
         </label>
         <button className="button primary" type="submit" disabled={isSubmitting}>

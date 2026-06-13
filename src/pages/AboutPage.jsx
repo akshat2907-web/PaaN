@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import FounderSection from '../components/sections/FounderSection.jsx'
+import { fetchPublicSiteAssets } from '../lib/siteAssetsApi.js'
 
 const values = [
   {
@@ -17,6 +19,31 @@ const values = [
 ]
 
 function AboutPage() {
+  const [aboutAssets, setAboutAssets] = useState({})
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadAboutAssets() {
+      try {
+        const assets = await fetchPublicSiteAssets([
+          'about_main',
+          'about_founder_1',
+          'about_founder_2',
+        ])
+        if (isMounted) setAboutAssets(assets)
+      } catch {
+        if (isMounted) setAboutAssets({})
+      }
+    }
+
+    loadAboutAssets()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <>
       <section className="page-hero about-hero">
@@ -36,8 +63,15 @@ function AboutPage() {
       </section>
 
       <section className="section about-grid">
-        <div className="about-image textile-sage">
-          <span>Threads of Heritage</span>
+        <div className={`about-image textile-sage ${aboutAssets.about_main?.image_url ? 'has-site-image' : ''}`}>
+          {aboutAssets.about_main?.image_url ? (
+            <img
+              src={aboutAssets.about_main.image_url}
+              alt={aboutAssets.about_main.alt_text || 'PaaN heritage textile detail'}
+            />
+          ) : (
+            <span>Threads of Heritage</span>
+          )}
         </div>
         <div className="about-copy">
           <p className="eyebrow">Brand direction</p>
@@ -68,7 +102,11 @@ function AboutPage() {
         ))}
       </section>
 
-      <FounderSection compact />
+      <FounderSection
+        compact
+        primaryAsset={aboutAssets.about_founder_1}
+        secondaryAsset={aboutAssets.about_founder_2}
+      />
     </>
   )
 }

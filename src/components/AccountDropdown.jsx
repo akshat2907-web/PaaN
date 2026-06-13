@@ -1,30 +1,80 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCustomerAuth } from '../context/AuthContext.jsx'
+import { getAdminProfile, signOutAdmin } from '../lib/adminAuth.js'
 
-function AccountDropdown({ onNavigate }) {
-  const [isOpen, setIsOpen] = useState(false)
+function AccountDropdown({ isOpen = false, onClose, onNavigate, onToggle }) {
+  const menuRef = useRef(null)
+  const [adminProfile, setAdminProfile] = useState(null)
   const { user, profile, signOut } = useCustomerAuth()
+  const hasSavedCustomerDetails = Boolean(user?.email)
+  const isSignedIn = hasSavedCustomerDetails || Boolean(adminProfile)
 
   function closeDropdown() {
-    setIsOpen(false)
+    onClose?.()
     onNavigate?.()
   }
 
   async function handleSignOut() {
     await signOut()
+    if (adminProfile) {
+      await signOutAdmin()
+    }
+    setAdminProfile(null)
     closeDropdown()
   }
 
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadAdminStatus() {
+      try {
+        const adminProfile = await getAdminProfile()
+        if (isMounted) setAdminProfile(adminProfile)
+      } catch {
+        if (isMounted) setAdminProfile(null)
+      }
+    }
+
+    loadAdminStatus()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return undefined
+
+    function handleDocumentMouseDown(event) {
+      if (menuRef.current?.contains(event.target)) return
+      onClose?.()
+    }
+
+    function handleDocumentKeyDown(event) {
+      if (event.key === 'Escape') {
+        onClose?.()
+      }
+    }
+
+    document.addEventListener('mousedown', handleDocumentMouseDown)
+    document.addEventListener('keydown', handleDocumentKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleDocumentMouseDown)
+      document.removeEventListener('keydown', handleDocumentKeyDown)
+    }
+  }, [isOpen, onClose])
+
   return (
-    <div className="account-menu">
+    <div className="account-menu" ref={menuRef}>
       <button
         className="account-menu-button"
         type="button"
         aria-label="Account menu"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={onToggle}
       >
         Account
       </button>
@@ -38,29 +88,36 @@ function AccountDropdown({ onNavigate }) {
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.18 }}
           >
-            {user ? (
+            {isSignedIn ? (
               <>
                 <div className="account-dropdown-header">
-                  <p className="eyebrow">Signed in</p>
-                  <strong>{profile?.full_name || user.email}</strong>
+                  <p className="eyebrow">Saved profile</p>
+                  <strong>
+                    {profile?.full_name || profile?.email || adminProfile?.email}
+                  </strong>
                 </div>
                 <Link to="/account" onClick={closeDropdown}>
-                  My Account
+                  Customer Details
                 </Link>
                 <Link to="/account#orders" onClick={closeDropdown}>
-                  My Orders
+                  Enquiry Profile
                 </Link>
                 <Link to="/cart" onClick={closeDropdown}>
                   Cart
                 </Link>
+                {adminProfile ? (
+                  <Link to="/admin" onClick={closeDropdown}>
+                    Admin Dashboard
+                  </Link>
+                ) : null}
                 <button type="button" onClick={handleSignOut}>
-                  Sign out
+                  Clear details
                 </button>
               </>
             ) : (
               <>
                 <Link to="/account" onClick={closeDropdown}>
-                  Sign in
+                  Customer Details
                 </Link>
                 <Link to="/cart" onClick={closeDropdown}>
                   Cart

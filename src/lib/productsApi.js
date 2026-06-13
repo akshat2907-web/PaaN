@@ -6,6 +6,12 @@ const collectionLabels = {
   exclusive: 'Exclusive',
 }
 
+const productTypeLabels = {
+  saree: 'SAREE',
+  kurta_set: 'KURTA SET',
+  suit: 'SUIT',
+}
+
 const uuidPattern =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -35,18 +41,58 @@ function toneFromProduct(product) {
   return 'leaf'
 }
 
+function sortByOrder(items = []) {
+  return [...items].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+}
+
+function mapProductMedia(product) {
+  return sortByOrder(product.product_images || []).map((item) => ({
+    ...item,
+    media_type: item.media_type || 'image',
+    mediaType: item.media_type || 'image',
+    image_url: item.image_url || '',
+    imageUrl: item.image_url || '',
+    thumbnail_url: item.thumbnail_url || '',
+    thumbnailUrl: item.thumbnail_url || '',
+    alt_text: item.alt_text || product.name,
+    altText: item.alt_text || product.name,
+    variant_id: item.variant_id || null,
+    variantId: item.variant_id || null,
+  }))
+}
+
+function mapProductVariants(product, media) {
+  return sortByOrder(product.product_variants || []).map((variant) => ({
+    ...variant,
+    colorName: variant.color_name,
+    colorHex: variant.color_hex || '',
+    priceOverride: variant.price_override,
+    inventoryCount: variant.inventory_count,
+    media: media.filter((item) => item.variant_id === variant.id),
+  }))
+}
+
 export function mapSupabaseProduct(product) {
-  const images = [...(product.product_images || [])].sort(
-    (a, b) => a.sort_order - b.sort_order,
-  )
-  const primaryImage = images[0]
+  const media = mapProductMedia(product)
+  const variants = mapProductVariants(product, media)
+  const productMedia = media.filter((item) => !item.variant_id)
+  const fallbackMedia = productMedia.length ? productMedia : media
+  const images = fallbackMedia.filter((item) => item.media_type === 'image')
+  const primaryMedia = fallbackMedia[0]
+  const primaryImage = images[0] || primaryMedia
 
   return {
     id: product.id,
     slug: product.slug,
     collection: product.collection,
     name: product.name,
-    category: collectionLabels[product.collection] || 'PaaN',
+    product_type: product.product_type || '',
+    productType: product.product_type || '',
+    category:
+      productTypeLabels[product.product_type] ||
+      product.category ||
+      collectionLabels[product.collection] ||
+      'PaaN',
     fabric: product.fabric || 'PaaN textile',
     color: product.color || '',
     tone: toneFromProduct(product),
@@ -62,6 +108,9 @@ export function mapSupabaseProduct(product) {
     status: product.status,
     imageUrl: primaryImage?.image_url || '',
     images,
+    media: fallbackMedia,
+    productMedia,
+    variants,
   }
 }
 
@@ -70,7 +119,7 @@ export async function fetchPublishedProductsByCollection(collection) {
 
   const { data, error } = await supabase
     .from('products')
-    .select('*, product_images(*)')
+    .select('*, product_images(*), product_variants(*)')
     .eq('collection', collection)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
@@ -88,7 +137,7 @@ export async function fetchFeaturedPublishedProducts(limit = 6) {
 
   const { data, error } = await supabase
     .from('products')
-    .select('*, product_images(*)')
+    .select('*, product_images(*), product_variants(*)')
     .eq('status', 'published')
     .eq('featured', true)
     .order('created_at', { ascending: false })
@@ -112,7 +161,7 @@ export async function fetchPublishedProduct(identifier) {
 
   const { data, error } = await supabase
     .from('products')
-    .select('*, product_images(*)')
+    .select('*, product_images(*), product_variants(*)')
     .eq('status', 'published')
     .or(filters.join(','))
     .maybeSingle()
@@ -126,7 +175,7 @@ export async function fetchAdminProducts() {
 
   const { data, error } = await supabase
     .from('products')
-    .select('*, product_images(*)')
+    .select('*, product_images(*), product_variants(*)')
     .order('created_at', { ascending: false })
 
   if (error) throw error
@@ -146,6 +195,50 @@ export async function updateProductImageOrder(images) {
   }
 }
 
+export async function updateProductVariantOrder(variants) {
+  if (!supabase) throw new Error('Supabase is not configured.')
+
+  for (const [index, variant] of variants.entries()) {
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ sort_order: index })
+      .eq('id', variant.id)
+
+    if (error) throw error
+  }
+}
+
+export async function saveProductVariant(productId, variant) {
+  if (!supabase) throw new Error('Supabase is not configured.')
+
+  const payload = {
+    product_id: productId,
+    color_name: variant.color_name || variant.colorName,
+    color_hex: variant.color_hex || null,
+    price_override: variant.price_override === '' ? null : Number(variant.price_override),
+    inventory_count:
+      variant.inventory_count === '' || variant.inventory_count == null
+        ? null
+        : Math.max(0, Number(variant.inventory_count) || 0),
+    sort_order: Number(variant.sort_order) || 0,
+  }
+
+  const query = variant.id
+    ? supabase.from('product_variants').update(payload).eq('id', variant.id).select().single()
+    : supabase.from('product_variants').insert(payload).select().single()
+
+  const { data, error } = await query
+  if (error) throw error
+  return data
+}
+
+export async function deleteProductVariant(variantId) {
+  if (!supabase) throw new Error('Supabase is not configured.')
+
+  const { error } = await supabase.from('product_variants').delete().eq('id', variantId)
+  if (error) throw error
+}
+
 export async function saveAdminProduct(product) {
   if (!supabase) throw new Error('Supabase is not configured.')
 
@@ -153,6 +246,7 @@ export async function saveAdminProduct(product) {
     name: product.name,
     slug: product.slug,
     collection: product.collection,
+    product_type: product.product_type || 'saree',
     price: Number(product.price),
     fabric: product.fabric || null,
     color: product.color || null,
@@ -191,15 +285,20 @@ export async function deleteAdminProductImage(imageId) {
   if (error) throw error
 }
 
-export async function uploadProductImages(productId, files) {
+export async function uploadProductImages(productId, files, options = {}) {
   if (!supabase) throw new Error('Supabase is not configured.')
   if (!files?.length) return []
 
   const uploadedImages = []
+  const { variantId = null } = options
 
   for (const [index, file] of Array.from(files).entries()) {
     const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, '-')
-    const path = `products/${productId}/${Date.now()}-${index}-${safeName}`
+    const basePath = variantId
+      ? `products/${productId}/variants/${variantId}`
+      : `products/${productId}/media`
+    const path = `${basePath}/${Date.now()}-${index}-${safeName}`
+    const mediaType = file.type.startsWith('video/') ? 'video' : 'image'
 
     const { error: uploadError } = await supabase.storage
       .from('product-images')
@@ -213,6 +312,8 @@ export async function uploadProductImages(productId, files) {
 
     uploadedImages.push({
       product_id: productId,
+      variant_id: variantId,
+      media_type: mediaType,
       image_url: publicUrlData.publicUrl,
       alt_text: file.name.replace(/\.[^.]+$/, ''),
       sort_order: index,

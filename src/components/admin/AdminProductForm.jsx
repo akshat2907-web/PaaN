@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import AdminVariantManager from './AdminVariantManager.jsx'
 
 const blankProduct = {
   name: '',
   slug: '',
   collection: 'classic',
+  product_type: 'saree',
   price: '',
   fabric: '',
   color: '',
@@ -29,11 +31,18 @@ function AdminProductForm({
   onUploadImages,
   onDeleteImage,
   onReorderImages,
+  onSaveVariant,
+  onDeleteVariant,
+  onReorderVariants,
+  onUploadVariantMedia,
   isSaving,
 }) {
   const [formData, setFormData] = useState(blankProduct)
   const [imageFiles, setImageFiles] = useState([])
   const [formError, setFormError] = useState('')
+  const productLevelImages = [...(formData.product_images || [])].filter(
+    (image) => !image.variant_id,
+  )
 
   useEffect(() => {
     setFormData(
@@ -43,6 +52,7 @@ function AdminProductForm({
             name: product.name || '',
             slug: product.slug || '',
             collection: product.collection || 'classic',
+            product_type: product.product_type || 'saree',
             price: product.price || '',
             fabric: product.fabric || '',
             color: product.color || '',
@@ -52,9 +62,12 @@ function AdminProductForm({
             status: product.status || 'draft',
             inventory_count: product.inventory_count ?? 0,
             featured: product.featured ?? false,
-          product_images: [...(product.product_images || [])].sort(
-            (a, b) => a.sort_order - b.sort_order,
-          ),
+            product_images: [...(product.product_images || [])].sort(
+              (a, b) => a.sort_order - b.sort_order,
+            ),
+            product_variants: [...(product.product_variants || [])].sort(
+              (a, b) => a.sort_order - b.sort_order,
+            ),
           }
         : blankProduct,
     )
@@ -97,7 +110,7 @@ function AdminProductForm({
 
   function moveImage(index, direction) {
     const nextIndex = index + direction
-    const images = [...(formData.product_images || [])]
+    const images = [...productLevelImages]
 
     if (nextIndex < 0 || nextIndex >= images.length) return
 
@@ -119,7 +132,7 @@ function AdminProductForm({
   function setPrimaryImage(index) {
     if (index === 0) return
 
-    const images = [...(formData.product_images || [])]
+    const images = [...productLevelImages]
     const [image] = images.splice(index, 1)
     images.unshift(image)
 
@@ -171,6 +184,18 @@ function AdminProductForm({
               <option value="classic">Classic</option>
               <option value="premium">Premium</option>
               <option value="exclusive">Exclusive</option>
+            </select>
+          </label>
+          <label>
+            Product type
+            <select
+              value={formData.product_type}
+              onChange={(event) => updateField('product_type', event.target.value)}
+              required
+            >
+              <option value="saree">SAREE</option>
+              <option value="kurta_set">KURTA SET</option>
+              <option value="suit">SUIT</option>
             </select>
           </label>
           <label>
@@ -231,10 +256,10 @@ function AdminProductForm({
             </select>
           </label>
           <label>
-            Images
+            Media
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
               multiple
               onChange={(event) => setImageFiles(Array.from(event.target.files || []))}
             />
@@ -266,25 +291,29 @@ function AdminProductForm({
           />
         </label>
 
-        {formData.product_images?.length ? (
+        {productLevelImages.length ? (
           <section className="admin-image-manager">
             <div className="admin-image-manager-heading">
               <div>
                 <p className="eyebrow">Image manager</p>
                 <h3>Product gallery</h3>
               </div>
-              <span>{formData.product_images.length} images</span>
+              <span>{productLevelImages.length} media</span>
             </div>
 
             <div className="admin-image-grid">
-              {formData.product_images.map((image, index) => (
+              {productLevelImages.map((image, index) => (
                 <article className="admin-image-card" key={image.id}>
                   <div className="admin-image-preview">
-                    <img src={image.image_url} alt={image.alt_text || formData.name} />
+                    {(image.media_type || 'image') === 'video' ? (
+                      <video src={image.image_url} muted playsInline preload="metadata" />
+                    ) : (
+                      <img src={image.image_url} alt={image.alt_text || formData.name} />
+                    )}
                     {index === 0 ? <span>Primary image</span> : null}
                   </div>
                   <div className="admin-image-meta">
-                    <strong>Image {index + 1}</strong>
+                    <strong>{(image.media_type || 'image') === 'video' ? 'Video' : 'Image'} {index + 1}</strong>
                     <small>{image.alt_text || formData.name}</small>
                   </div>
                   <div className="admin-image-actions">
@@ -305,7 +334,7 @@ function AdminProductForm({
                     <button
                       type="button"
                       onClick={() => moveImage(index, 1)}
-                      disabled={index === formData.product_images.length - 1}
+                      disabled={index === productLevelImages.length - 1}
                     >
                       Move right
                     </button>
@@ -318,6 +347,14 @@ function AdminProductForm({
             </div>
           </section>
         ) : null}
+
+        <AdminVariantManager
+          product={formData}
+          onSaveVariant={onSaveVariant}
+          onDeleteVariant={onDeleteVariant}
+          onReorderVariants={onReorderVariants}
+          onUploadVariantMedia={onUploadVariantMedia}
+        />
 
         {formError ? <p className="admin-message">{formError}</p> : null}
 

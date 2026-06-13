@@ -1,9 +1,40 @@
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { formatCartPrice, useCart } from '../context/CartContext.jsx'
+import { getStoredCustomerDetails, hasStoredCustomerDetails } from '../context/AuthContext.jsx'
 
 function CartPage() {
+  const navigate = useNavigate()
   const { items, formattedSubtotal, updateQuantity, removeItem, clearCart } = useCart()
+
+  function handleCartEnquiry() {
+    if (!hasStoredCustomerDetails()) {
+      navigate('/account?next=/cart')
+      return
+    }
+
+    const customerDetails = getStoredCustomerDetails()
+    const itemLines = items.map(
+      (item) => `- ${item.name} x ${item.quantity}: ${formatCartPrice(item.unitPrice * item.quantity)}`,
+    )
+    const message = [
+      'Hello PaaN,',
+      '',
+      'I would like to enquire about these pieces:',
+      ...itemLines,
+      `Subtotal: ${formattedSubtotal}`,
+      '',
+      'Customer details:',
+      `Name: ${customerDetails.full_name}`,
+      `Email: ${customerDetails.email}`,
+      `Phone: ${customerDetails.phone}`,
+      customerDetails.address ? `Address: ${customerDetails.address}` : '',
+    ].join('\n')
+    const whatsappUrl = `https://wa.me/919794493545?text=${encodeURIComponent(message)}`
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
 
   if (!items.length) {
     return (
@@ -81,6 +112,9 @@ function CartPage() {
           <p className="eyebrow">Subtotal</p>
           <strong>{formattedSubtotal}</strong>
           <p>Checkout will arrive in a later phase. For now, this keeps your edit close.</p>
+          <button className="button primary" type="button" onClick={handleCartEnquiry}>
+            Enquire on WhatsApp
+          </button>
           <Link className="button secondary" to="/collections/classic">
             Continue browsing
           </Link>

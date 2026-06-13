@@ -17,8 +17,16 @@ const navItems = [
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState(null)
 
-  const closeMenu = () => setIsOpen(false)
+  const closeDropdowns = () => setOpenDropdown(null)
+  const closeMenu = () => {
+    setIsOpen(false)
+    closeDropdowns()
+  }
+  const toggleDropdown = (dropdownName) => {
+    setOpenDropdown((current) => (current === dropdownName ? null : dropdownName))
+  }
 
   return (
     <motion.header
@@ -47,8 +55,16 @@ function Navbar() {
               {item.label}
             </NavLink>
           ))}
-          <AccountDropdown />
-          <CartDropdown />
+          <AccountDropdown
+            isOpen={openDropdown === 'desktop-account'}
+            onClose={closeDropdowns}
+            onToggle={() => toggleDropdown('desktop-account')}
+          />
+          <CartDropdown
+            isOpen={openDropdown === 'desktop-cart'}
+            onClose={closeDropdowns}
+            onToggle={() => toggleDropdown('desktop-cart')}
+          />
         </div>
 
         <button
@@ -56,7 +72,10 @@ function Navbar() {
           type="button"
           aria-label="Toggle navigation"
           aria-expanded={isOpen}
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={() => {
+            closeDropdowns()
+            setIsOpen((current) => !current)
+          }}
         >
           <span />
           <span />
@@ -85,8 +104,18 @@ function Navbar() {
               </NavLink>
             ))}
             <div className="mobile-cart-row">
-              <AccountDropdown onNavigate={closeMenu} />
-              <CartDropdown onNavigate={closeMenu} />
+              <AccountDropdown
+                isOpen={openDropdown === 'mobile-account'}
+                onClose={closeDropdowns}
+                onNavigate={closeMenu}
+                onToggle={() => toggleDropdown('mobile-account')}
+              />
+              <CartDropdown
+                isOpen={openDropdown === 'mobile-cart'}
+                onClose={closeDropdowns}
+                onNavigate={closeMenu}
+                onToggle={() => toggleDropdown('mobile-cart')}
+              />
             </div>
           </motion.div>
         ) : null}

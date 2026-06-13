@@ -1,145 +1,71 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { supabase } from '../lib/supabase.js'
 
 const AuthContext = createContext(null)
+const customerDetailsKey = 'paan-customer-details'
 
-function getCustomerMagicLinkRedirectTo() {
-  return `${window.location.origin}/account`
+const blankCustomerDetails = {
+  full_name: '',
+  email: '',
+  phone: '',
+  address: '',
 }
 
-async function upsertCustomerProfile(user) {
-  if (!supabase || !user?.id || !user?.email) return null
+function readCustomerDetails() {
+  if (typeof window === 'undefined') return blankCustomerDetails
 
-  const { data, error } = await supabase
-    .from('customer_profiles')
-    .upsert(
-      {
-        id: user.id,
-        email: user.email,
-      },
-      { onConflict: 'id' },
-    )
-    .select()
-    .single()
-
-  if (error) throw error
-  return data
+  try {
+    const storedDetails = window.localStorage.getItem(customerDetailsKey)
+    return storedDetails
+      ? { ...blankCustomerDetails, ...JSON.parse(storedDetails) }
+      : blankCustomerDetails
+  } catch {
+    return blankCustomerDetails
+  }
 }
 
-async function fetchCustomerProfile(userId) {
-  if (!supabase || !userId) return null
-
-  const { data, error } = await supabase
-    .from('customer_profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle()
-
-  if (error) throw error
-  return data
+function hasRequiredCustomerDetails(details) {
+  return Boolean(details?.full_name?.trim() && details?.email?.trim() && details?.phone?.trim())
 }
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(null)
-  const [profile, setProfile] = useState(null)
+  const [profile, setProfile] = useState(blankCustomerDetails)
   const [isAuthLoading, setIsAuthLoading] = useState(true)
-  const user = session?.user || null
-
-  async function loadProfile(nextSession) {
-    setSession(nextSession)
-
-    if (!nextSession?.user) {
-      setProfile(null)
-      return
-    }
-
-    try {
-      const nextProfile =
-        (await fetchCustomerProfile(nextSession.user.id)) ||
-        (await upsertCustomerProfile(nextSession.user))
-      setProfile(nextProfile)
-    } catch {
-      setProfile(null)
-    }
-  }
+  const hasCustomerDetails = hasRequiredCustomerDetails(profile)
+  const user = hasCustomerDetails ? { email: profile.email } : null
 
   useEffect(() => {
-    if (!supabase) {
-      setIsAuthLoading(false)
-      return undefined
-    }
-
-    let isMounted = true
-
-    supabase.auth.getSession().then(({ data }) => {
-      if (!isMounted) return
-      loadProfile(data.session).finally(() => {
-        if (isMounted) setIsAuthLoading(false)
-      })
-    })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      loadProfile(nextSession)
-    })
-
-    return () => {
-      isMounted = false
-      subscription.unsubscribe()
-    }
+    setProfile(readCustomerDetails())
+    setIsAuthLoading(false)
   }, [])
 
-  async function sendMagicLink(email) {
-    if (!supabase) throw new Error('Supabase is not configured.')
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: getCustomerMagicLinkRedirectTo(),
-      },
-    })
-
-    if (error) throw error
-  }
-
   async function saveProfile(updates) {
-    if (!supabase || !user) throw new Error('Sign in before saving your profile.')
+    const nextProfile = {
+      ...blankCustomerDetails,
+      ...profile,
+      ...updates,
+    }
 
-    const { data, error } = await supabase
-      .from('customer_profiles')
-      .update({
-        full_name: updates.full_name || null,
-        phone: updates.phone || null,
-      })
-      .eq('id', user.id)
-      .select()
-      .single()
-
-    if (error) throw error
-    setProfile(data)
-    return data
+    window.localStorage.setItem(customerDetailsKey, JSON.stringify(nextProfile))
+    setProfile(nextProfile)
+    return nextProfile
   }
 
   async function signOut() {
-    if (!supabase) return
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-    setSession(null)
-    setProfile(null)
+    window.localStorage.removeItem(customerDetailsKey)
+    setProfile(blankCustomerDetails)
   }
 
   const value = useMemo(
     () => ({
-      session,
+      session: null,
       user,
       profile,
       isAuthLoading,
-      sendMagicLink,
+      hasCustomerDetails,
       saveProfile,
       signOut,
     }),
-    [session, user, profile, isAuthLoading],
+    [user, profile, isAuthLoading, hasCustomerDetails],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -152,4 +78,12 @@ export function useCustomerAuth() {
   }
 
   return context
+}
+
+export function getStoredCustomerDetails() {
+  return readCustomerDetails()
+}
+
+export function hasStoredCustomerDetails() {
+  return hasRequiredCustomerDetails(readCustomerDetails())
 }

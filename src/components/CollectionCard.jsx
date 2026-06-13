@@ -2,16 +2,23 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
-function CollectionCard({ collection, index = 0 }) {
+function CollectionCard({ collection, index = 0, slides = [] }) {
   const [slide, setSlide] = useState(0)
+  const hasSlides = slides.length > 0
 
   useEffect(() => {
-    // 5-8 second slow editorial fade (using 6.5s here)
+    if (slides.length < 2) return undefined
+
     const timer = setInterval(() => {
-      setSlide((s) => (s + 1) % 3)
+      setSlide((currentSlide) => (currentSlide + 1) % slides.length)
     }, 6500)
+
     return () => clearInterval(timer)
-  }, [])
+  }, [slides.length])
+
+  useEffect(() => {
+    setSlide(0)
+  }, [collection.slug, slides.length])
 
   return (
     <motion.article
@@ -22,27 +29,22 @@ function CollectionCard({ collection, index = 0 }) {
       transition={{ delay: index * 0.1, duration: 0.5 }}
     >
       <Link to={`/collections/${collection.slug}`}>
-        <div className="collection-image" style={{ position: 'relative', overflow: 'hidden' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={slide}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 2.5, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: slide === 1 
-                  ? 'linear-gradient(0deg, rgba(15, 61, 34, 0.05), transparent)' 
-                  : slide === 2 
-                  ? 'linear-gradient(180deg, rgba(181, 148, 74, 0.08), transparent)' 
-                  : 'transparent',
-                zIndex: 0
-              }}
-            />
-          </AnimatePresence>
-          <span style={{ position: 'relative', zIndex: 1 }}>{collection.name}</span>
+        <div className={`collection-image ${hasSlides ? 'has-slideshow' : ''}`}>
+          {hasSlides ? (
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={slides[slide]?.id || slides[slide]?.imageUrl}
+                src={slides[slide]?.imageUrl}
+                alt={slides[slide]?.altText || collection.name}
+                initial={{ opacity: 0, scale: 1.035 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.01 }}
+                transition={{ duration: 1.6, ease: 'easeInOut' }}
+                loading="lazy"
+              />
+            </AnimatePresence>
+          ) : null}
+          <span>{collection.name}</span>
         </div>
         <div className="collection-card-copy">
           <p>{collection.eyebrow}</p>

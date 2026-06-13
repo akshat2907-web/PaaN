@@ -20,22 +20,30 @@ const heroTextVariants = {
   },
 }
 
-function HeroSection() {
+function HeroSection({ mainAsset, secondaryAsset }) {
   return (
     <section className="hero-section">
       <div className="hero-media" aria-hidden="true">
         <motion.div
-          className="fabric-panel panel-large"
+          className={`fabric-panel panel-large ${mainAsset?.image_url ? 'has-site-image' : ''}`}
           initial={{ opacity: 0, x: 28 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.82, delay: 0.82, ease: [0.22, 1, 0.36, 1] }}
-        />
+        >
+          {mainAsset?.image_url ? (
+            <img src={mainAsset.image_url} alt={mainAsset.alt_text || ''} />
+          ) : null}
+        </motion.div>
         <motion.div
-          className="fabric-panel panel-small"
+          className={`fabric-panel panel-small ${secondaryAsset?.image_url ? 'has-site-image' : ''}`}
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.82, delay: 0.94, ease: [0.22, 1, 0.36, 1] }}
-        />
+        >
+          {secondaryAsset?.image_url ? (
+            <img src={secondaryAsset.image_url} alt={secondaryAsset.alt_text || ''} />
+          ) : null}
+        </motion.div>
       </div>
 
       <motion.div
@@ -58,9 +66,9 @@ function HeroSection() {
           heritage detail made for the life you already live.
         </motion.p>
         <motion.div className="hero-actions" variants={heroTextVariants}>
-          <Link className="button primary" to="/collections/classic">
-            Explore Classic
-          </Link>
+          <a className="button primary" href="#collections">
+            Browse Collections
+          </a>
           <Link className="button secondary" to="/about">
             Our Story
           </Link>

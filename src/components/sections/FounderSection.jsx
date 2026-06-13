@@ -1,18 +1,32 @@
 import { motion } from 'framer-motion'
 import { founderNotes } from '../../data/catalog.js'
 
-function FounderSection({ compact = false }) {
+function FounderSection({ compact = false, primaryAsset, secondaryAsset }) {
+  const founderImages = [primaryAsset, secondaryAsset].filter((asset) => asset?.image_url)
+
   return (
     <section className={compact ? 'founder-section compact' : 'founder-section'}>
       <motion.div
-        className="founder-portrait"
+        className={`founder-portrait ${founderImages.length ? 'has-site-image' : ''} ${
+          founderImages.length > 1 ? 'has-secondary-site-image' : ''
+        }`}
         style={{ aspectRatio: '3 / 4' }}
         initial={{ opacity: 0, scale: 0.98 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <span style={{ fontSize: '32px' }}>Threads of Heritage</span>
+        {founderImages.length ? (
+          founderImages.map((asset, index) => (
+            <img
+              key={asset.asset_key || asset.image_url}
+              src={asset.image_url}
+              alt={asset.alt_text || `PaaN founder portrait ${index + 1}`}
+            />
+          ))
+        ) : (
+          <span style={{ fontSize: '32px' }}>Threads of Heritage</span>
+        )}
       </motion.div>
       <motion.div
         className="founder-copy"

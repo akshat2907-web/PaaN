@@ -27,6 +27,28 @@ function Footer() {
           <Link to="/about">About PaaN</Link>
           <Link to="/">Homepage</Link>
         </div>
+        <div>
+          <h2>Connect</h2>
+          <a
+            href="https://www.instagram.com/paan_thethreadsofheritage/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Instagram
+          </a>
+          <a
+            href="https://chat.whatsapp.com/Kg4wRAjYDWZ1aiNauEajiD?s=sw&p=i&mlu=3"
+            target="_blank"
+            rel="noreferrer"
+          >
+            WhatsApp Community
+          </a>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <a href="tel:+919794493545">+91 97944 93545</a>
+          <a href="tel:+918679620822">+91 86796 20822</a>
+        </div>
       </div>
       <div className="footer-heritage">
         <button

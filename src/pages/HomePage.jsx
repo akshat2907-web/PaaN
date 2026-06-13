@@ -1,18 +1,46 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard.jsx'
 import CollectionsSection from '../components/sections/CollectionsSection.jsx'
 import FounderSection from '../components/sections/FounderSection.jsx'
 import HeroSection from '../components/sections/HeroSection.jsx'
 import { products } from '../data/catalog.js'
+import { fetchPublicSiteAssets } from '../lib/siteAssetsApi.js'
 
 const categoryItems = ['Sarees', 'Suits', 'Kurta Sets', 'Traditional Wear']
 
 function HomePage() {
   const featuredProducts = products.slice(0, 6)
+  const [heroAssets, setHeroAssets] = useState({})
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadHeroAssets() {
+      try {
+        const assets = await fetchPublicSiteAssets([
+          'home_hero_main',
+          'home_hero_secondary',
+        ])
+        if (isMounted) setHeroAssets(assets)
+      } catch {
+        if (isMounted) setHeroAssets({})
+      }
+    }
+
+    loadHeroAssets()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <>
-      <HeroSection />
+      <HeroSection
+        mainAsset={heroAssets.home_hero_main}
+        secondaryAsset={heroAssets.home_hero_secondary}
+      />
 
       <section className="category-strip" aria-label="Featured categories">
         {categoryItems.map((item, index) => (
